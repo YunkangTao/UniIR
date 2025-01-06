@@ -108,7 +108,7 @@ data_config:
     # Relative to mbeir_data_dir
     train_dir_name: "query/train"
     val_dir_name: "query/val"
-    test_dir_name: "query/test"
+    test_dir_name: "query/test_subclass"
     cand_pool_dir_name: "cand_pool/local"
     query_instruct_path: "instructions/query_instructions.tsv"
 

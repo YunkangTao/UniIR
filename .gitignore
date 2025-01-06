@@ -167,3 +167,7 @@ cython_debug/
 #*.ipynb
 wandb/
 log.txt
+
+M-BEIR
+src/models/condaenv._k7z0sof.requirements.txt
+UniIR/
