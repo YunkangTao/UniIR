@@ -3,7 +3,7 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 
 # Initialize Conda
-source /home/chenyang_lei/anaconda3/etc/profile.d/conda.sh # <--- Change this to the path of your conda.sh
+. /home/chenyang_lei/anaconda3/etc/profile.d/conda.sh # <--- Change this to the path of your conda.sh
 
 # Path to the codebase and config file
 SRC="/home/chenyang_lei/video_diffusion_models/UniIR/src"  # Absolute path to codebse /UniIR/src # <--- Change this to the path of your UniIR/src
@@ -24,8 +24,8 @@ EXP_NAME="inbatch"
 CONFIG_DIR="$MODEL_DIR/configs_scripts/$SIZE/$MODE/$EXP_NAME"
 
 # Set CUDA devices and PYTHONPATH
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7  # <--- Change this to the CUDA devices you want to use
-NPROC=8 # <--- Change this to the number of GPUs you want to use
+export CUDA_VISIBLE_DEVICES=0,1,2,3  # <--- Change this to the CUDA devices you want to use
+NPROC=4 # <--- Change this to the number of GPUs you want to use
 export PYTHONPATH=$SRC
 echo "PYTHONPATH: $PYTHONPATH"
 echo  "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
@@ -38,7 +38,7 @@ cd $COMMON_DIR
 conda activate uniir # <--- Change this to the name of your conda environment
 
 # Run Embedding command
-CONFIG_PATH="$CONFIG_DIR/embed.yaml"
+CONFIG_PATH="$CONFIG_DIR/embed_subclass.yaml"
 SCRIPT_NAME="mbeir_embedder.py"
 echo "CONFIG_PATH: $CONFIG_PATH"
 echo "SCRIPT_NAME: $SCRIPT_NAME"
@@ -57,7 +57,7 @@ python -m torch.distributed.run --nproc_per_node=$NPROC $SCRIPT_NAME \
 conda activate faiss # <--- Change this to the name of your conda environment
 
 # Run Index command
-CONFIG_PATH="$CONFIG_DIR/index.yaml"
+CONFIG_PATH="$CONFIG_DIR/index_subclass.yaml"
 SCRIPT_NAME="mbeir_retriever.py"
 echo "CONFIG_PATH: $CONFIG_PATH"
 echo "SCRIPT_NAME: $SCRIPT_NAME"
@@ -74,7 +74,7 @@ python $SCRIPT_NAME \
     --enable_create_index
 
 # Run retrieval command
-CONFIG_PATH="$CONFIG_DIR/retrieval.yaml"
+CONFIG_PATH="$CONFIG_DIR/retrieval_subclass.yaml"
 SCRIPT_NAME="mbeir_retriever.py"
 echo "CONFIG_PATH: $CONFIG_PATH"
 echo "SCRIPT_NAME: $SCRIPT_NAME"

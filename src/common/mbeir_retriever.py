@@ -179,9 +179,7 @@ def load_qrel(filename):
                 if query_id not in qid_to_taskid:
                     qid_to_taskid[query_id] = task_id
     print(f"Retriever: Loaded {len(qrel)} queries from {filename}")
-    print(
-        f"Retriever: Average number of relevant documents per query: {sum(len(v) for v in qrel.values()) / len(qrel):.2f}"
-    )
+    print(f"Retriever: Average number of relevant documents per query: {sum(len(v) for v in qrel.values()) / len(qrel):.2f}")
     return qrel, qid_to_taskid
 
 
@@ -232,9 +230,7 @@ def search_index_with_batch(query_embeddings_batch, index_gpu, num_cand_to_retri
     return distances, indices
 
 
-def get_raw_retrieved_candidates(
-    queries_path, candidates_path, retrieved_indices, hashed_query_ids, complement_retriever
-):
+def get_raw_retrieved_candidates(queries_path, candidates_path, retrieved_indices, hashed_query_ids, complement_retriever):
     # Load raw queries
     qid_to_queries = {}
     with open(queries_path, "r") as f:
@@ -292,10 +288,7 @@ def get_raw_retrieved_candidates(
                 for cand in retrieved_comp_cands[idx]:
                     if cand["modality"] == complement_modalities[q_modality]:
                         # The retrieved complement candidate should not be the same as the original query.
-                        if (
-                            cand.get("img_path")
-                            and cand.get("img_path") != retrieved_dict[qid]["query"]["query_img_path"]
-                        ):
+                        if cand.get("img_path") and cand.get("img_path") != retrieved_dict[qid]["query"]["query_img_path"]:
                             complement_cand = cand
                             break
                         if cand.get("txt") and cand.get("txt") != retrieved_dict[qid]["query"]["query_txt"]:
@@ -353,9 +346,7 @@ def run_retrieval(config, query_embedder_config=None):
                     metric_names_list,
                 )
             )
-            assert (
-                len(dataset_name_list) == len(cand_pool_name_list) == len(qrel_name_list) == len(metric_names_list)
-            ), "Mismatch between datasets and candidate pools and qrels."
+            assert len(dataset_name_list) == len(cand_pool_name_list) == len(qrel_name_list) == len(metric_names_list), "Mismatch between datasets and candidate pools and qrels."
 
     # Pretty Print dataset to index
     print("-" * 30)
@@ -367,9 +358,7 @@ def run_retrieval(config, query_embedder_config=None):
         qrel_name_list,
         metric_names_list,
     ) in splits:
-        print(
-            f"Split: {split_name}, Retrieval Datasets: {dataset_name_list}, Candidate Pools: {cand_pool_name_list}, Metric: {metric_names_list})"
-        )
+        print(f"Split: {split_name}, Retrieval Datasets: {dataset_name_list}, Candidate Pools: {cand_pool_name_list}, Metric: {metric_names_list})")
         print("-" * 30)
 
     eval_results = []
@@ -383,9 +372,7 @@ def run_retrieval(config, query_embedder_config=None):
         qrel_name_list,
         metric_names_list,
     ) in splits:
-        for dataset_name, cand_pool_name, qrel_name, metric_names in zip(
-            dataset_name_list, cand_pool_name_list, qrel_name_list, metric_names_list
-        ):
+        for dataset_name, cand_pool_name, qrel_name, metric_names in zip(dataset_name_list, cand_pool_name_list, qrel_name_list, metric_names_list):
             print("\n" + "-" * 30)
             print(f"Retriever: Retrieving for query:{dataset_name} | split:{split} | from cand_pool:{cand_pool_name}")
 
@@ -450,20 +437,14 @@ def run_retrieval(config, query_embedder_config=None):
                     query_dir_name,
                     f"{split}/mbeir_{dataset_name}_{split}.jsonl",
                 )
-                candidates_path = os.path.join(
-                    mbeir_data_dir, candidate_dir_name, f"mbeir_{cand_pool_name}_{split}_cand_pool.jsonl"
-                )
+                candidates_path = os.path.join(mbeir_data_dir, candidate_dir_name, f"mbeir_{cand_pool_name}_{split}_cand_pool.jsonl")
                 # When retrieving complement candidates, we want to find the closest image to a candidate caption or vica versa to have image-text pairs.
                 # "MSCOCO" dataset supports both image->text and text->image queries.
                 dataset_name = "MSCOCO"
                 complement_retriever = (
-                    InteractiveRetriever(cand_index_path, candidates_path, dataset_name, query_embedder_config)
-                    if retrieval_config.retrieve_image_text_pairs
-                    else None
+                    InteractiveRetriever(cand_index_path, candidates_path, dataset_name, query_embedder_config) if retrieval_config.retrieve_image_text_pairs else None
                 )
-                retrieved_dict = get_raw_retrieved_candidates(
-                    queries_path, candidates_path, retrieved_indices, hashed_query_ids, complement_retriever
-                )
+                retrieved_dict = get_raw_retrieved_candidates(queries_path, candidates_path, retrieved_indices, hashed_query_ids, complement_retriever)
                 retrieved_file_name = f"{run_id}_retrieved.jsonl"
                 retrieved_file_path = os.path.join(exp_retrieved_cands_dir, retrieved_file_name)
                 with open(retrieved_file_path, "w") as retrieved_file:
@@ -615,9 +596,7 @@ def run_hard_negative_mining(config):
     # Query data file name
     retrieval_train_dataset_config = retrieval_config.train_datasets_config
     assert retrieval_train_dataset_config.enable_retrieve, "Hard negative mining is not enabled for training data"
-    dataset_name = retrieval_train_dataset_config.datasets_name[
-        0
-    ].lower()  # Only extract hard negatives for the first dataset
+    dataset_name = retrieval_train_dataset_config.datasets_name[0].lower()  # Only extract hard negatives for the first dataset
     dataset_split_name = "train"
     # Load query data
     query_data_path = os.path.join(mbeir_data_dir, "train", f"mbeir_{dataset_name}_{dataset_split_name}.jsonl")
@@ -632,9 +611,7 @@ def run_hard_negative_mining(config):
     embed_data_path = os.path.join(dataset_embed_dir, f"mbeir_{dataset_name}_{dataset_split_name}_embed.npy")
 
     # Load the candidate pool index
-    cand_pool_name = retrieval_train_dataset_config.correspond_cand_pools_name[
-        0
-    ].lower()  # Only extract the first candidate pool
+    cand_pool_name = retrieval_train_dataset_config.correspond_cand_pools_name[0].lower()  # Only extract the first candidate pool
     cand_pool_split_name = "cand_pool"
     cand_index_dir = os.path.join(uniir_dir, index_dir_name, expt_dir_name, cand_pool_split_name)
     cand_index_path = os.path.join(cand_index_dir, f"mbeir_{cand_pool_name}_{cand_pool_split_name}.index")
@@ -667,11 +644,7 @@ def run_hard_negative_mining(config):
         neg_cand_list = query_data["neg_cand_list"]
 
         # Add hard negatives to the query data
-        hard_negatives = [
-            doc_id
-            for doc_id in retrieved_indices_for_qid
-            if doc_id not in pos_cand_list and doc_id not in neg_cand_list
-        ]
+        hard_negatives = [doc_id for doc_id in retrieved_indices_for_qid if doc_id not in pos_cand_list and doc_id not in neg_cand_list]
 
         # Ensure that hard_negatives has a minimum length of num_hard_negs
         if 0 < len(hard_negatives) < num_hard_negs:
@@ -746,6 +719,8 @@ def main():
         dist_utils.init_distributed_mode(args)
         query_embedder_config.dist_config.gpu_id = args.gpu
         query_embedder_config.dist_config.distributed_mode = args.distributed
+    else:
+        query_embedder_config = None
 
     if args.enable_hard_negative_mining:
         run_hard_negative_mining(config)

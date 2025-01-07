@@ -22,6 +22,7 @@ from dist_utils import ContiguousDistributedSampler
 from mbeir_embedder import generate_embeds_and_ids_for_dataset_with_gather
 from utils import build_model_from_config, set_seed
 from data.preprocessing.utils import unhash_did, DATASET_IDS, MBEIR_TASK
+from typing import List, Tuple
 
 
 class Modality(Enum):
@@ -69,7 +70,7 @@ class InteractiveRetriever:
                 assert c["did"] not in self.did_to_candidates, "dids must be unique"
                 self.did_to_candidates[c["did"]] = c
 
-    def add_queries(self, queries: list[tuple[str, str, str, str]]):
+    def add_queries(self, queries: List[Tuple[str, str, str, str]]):
         for query_modality, query_txt, query_img_path, candidate_modality in queries:
             if query_modality == Modality.TEXT.value:
                 assert query_txt, "Query with 'text' modality must have non-null 'query_txt'"
